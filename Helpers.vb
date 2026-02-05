@@ -10,7 +10,11 @@ Module Helpers
     Public WithEvents MonitorTimer As New Timers.Timer(1000) ' Timer pentru monitorizare
 
     Private _cleaningDone As Boolean = False
+    Private _lastParentWidth As Integer = -1
+    Private _lastParentHeight As Integer = -1
 
+    Private Const EVENT_OBJECT_LOCATIONCHANGE As Integer = &H800B
+    Private Const WINEVENT_OUTOFCONTEXT As Integer = &H0
     ' =============================================================
     ' CONSOLA DEBUG - API
     ' =============================================================
@@ -88,6 +92,31 @@ Module Helpers
 
     Public Delegate Function EnumChildProcDelegate(hWnd As IntPtr, lParam As IntPtr) As Boolean
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetWindowLongPtr(hWnd As IntPtr, nIndex As Integer, dwNewLong As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("user32.dll")>
+    Public Function CallWindowProc(lpPrevWndFunc As IntPtr, hWnd As IntPtr, Msg As Integer, wParam As IntPtr, lParam As IntPtr) As IntPtr
+    End Function
+
+    Public Delegate Function WndProcDelegate(hWnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr) As IntPtr
+
+    <DllImport("user32.dll")>
+    Public Function SetWinEventHook(eventMin As Integer, eventMax As Integer, hmodWinEventProc As IntPtr,
+    lpfnWinEventProc As WinEventDelegate, idProcess As Integer, idThread As Integer, dwFlags As Integer) As IntPtr
+    End Function
+
+    <DllImport("user32.dll")>
+    Public Function UnhookWinEvent(hWinEventHook As IntPtr) As Boolean
+    End Function
+
+    Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As Integer, hwnd As IntPtr,
+    idObject As Integer, idChild As Integer, dwEventThread As Integer, dwmsEventTime As Integer)
+
+    Private _winEventHook As IntPtr = IntPtr.Zero
+    Private _winEventProc As WinEventDelegate ' Păstrăm referința pentru GC
+
     <StructLayout(LayoutKind.Sequential)>
     Private Structure LOGBRUSH
         Public lbStyle As Integer
@@ -101,6 +130,8 @@ Module Helpers
     End Structure
 
     Private Const WM_SETTEXT As Integer = &HC
+    Private Const WM_SIZE As Integer = &H5
+    Private Const GWL_WNDPROC As Integer = -4
     Private Const GCL_HBRBACKGROUND As Integer = -10
     Private Const OBJID_NATIVEOM As UInteger = &HFFFFFFF0&
     Private Const acSubform As Integer = 112
@@ -150,7 +181,7 @@ Module Helpers
         Return bmp.GetPixel(0, 0)
     End Function
 
-    Private Function GetFormObjectFromHwnd(hwndCautat As IntPtr) As Object
+    Public Function GetFormObjectFromHwnd(hwndCautat As IntPtr) As Object
         If _accessApp Is Nothing Then Return Nothing
 
         Try
@@ -226,10 +257,26 @@ Module Helpers
     ' FUNCȚII GENERALE - WINDOW HELPERS
     ' =============================================================
     Public Sub PositioneazaInParent(Frm As RTB)
+        If _formHwnd = IntPtr.Zero Then Exit Sub
+        If Frm Is Nothing OrElse Frm.IsDisposed Then Exit Sub
+
         Dim rParent As RECT
-        GetClientRect(_formHwnd, rParent)
-        If Frm.Width <> (rParent.Right - rParent.Left) OrElse Frm.Height <> (rParent.Bottom - rParent.Top) Then
-            MoveWindow(Frm.Handle, 0, 0, rParent.Right - rParent.Left, rParent.Bottom - rParent.Top, True)
+        If Not GetClientRect(_formHwnd, rParent) Then Exit Sub
+
+        Dim newWidth = rParent.Right - rParent.Left
+        Dim newHeight = rParent.Bottom - rParent.Top
+
+        ' Verifică dacă dimensiunile s-au schimbat
+        If newWidth = _lastParentWidth AndAlso newHeight = _lastParentHeight Then
+            Exit Sub ' Nu s-a schimbat nimic
+        End If
+
+        ' Actualizează cache
+        _lastParentWidth = newWidth
+        _lastParentHeight = newHeight
+
+        If newWidth > 0 AndAlso newHeight > 0 Then
+            MoveWindow(Frm.Handle, 0, 0, newWidth, newHeight, True)
         End If
     End Sub
 
@@ -325,6 +372,52 @@ Module Helpers
         End Try
     End Function
 
+    ' =============================================================
+    ' FUNCȚII GENERALE - MONITORIZARE DIMENSIUNE PĂRINTE
+    ' =============================================================
+    Public Sub HookParentResize()
+        If _winEventHook <> IntPtr.Zero Then Exit Sub
+
+        ' Obținem ProcessID și ThreadID pentru fereastra Access
+        Dim processId As Integer = 0
+        Dim threadId As Integer = GetWindowThreadProcessId(_formParentHwnd, processId)
+
+        _winEventProc = AddressOf WinEventCallback
+
+        _winEventHook = SetWinEventHook(
+        EVENT_OBJECT_LOCATIONCHANGE,
+        EVENT_OBJECT_LOCATIONCHANGE,
+        IntPtr.Zero,
+        _winEventProc,
+        processId,
+        threadId,
+        WINEVENT_OUTOFCONTEXT)
+
+        Debug.WriteLine($"SetWinEventHook: hook={_winEventHook}, pid={processId}, tid={threadId}")
+    End Sub
+
+    Public Sub UnhookParentResize()
+        If _winEventHook <> IntPtr.Zero Then
+            UnhookWinEvent(_winEventHook)
+            _winEventHook = IntPtr.Zero
+        End If
+    End Sub
+
+    Private Sub WinEventCallback(hWinEventHook As IntPtr, eventType As Integer, hwnd As IntPtr,
+    idObject As Integer, idChild As Integer, dwEventThread As Integer, dwmsEventTime As Integer)
+
+        ' Verificăm dacă e fereastra noastră părinte sau container
+        If hwnd = _formParentHwnd OrElse hwnd = _formHwnd Then
+            If frmRTB IsNot Nothing AndAlso frmRTB.IsHandleCreated AndAlso Not frmRTB.IsDisposed Then
+                frmRTB.BeginInvoke(Sub()
+                                       PositioneazaInParent(frmRTB)
+                                   End Sub)
+            End If
+        End If
+    End Sub
+    ' =============================================================
+    ' CURĂȚARE RESURSE ȘI IEȘIRE
+    ' =============================================================
     Private Sub CurataResurseSiIesi()
         If _cleaningDone Then Return
         _cleaningDone = True

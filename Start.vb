@@ -5,7 +5,18 @@ Module Start
     Sub Main()
         Try
             Dim args As String() = Environment.GetCommandLineArgs()
-
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2)
+            Application.EnableVisualStyles()
+            Application.SetCompatibleTextRenderingDefault(False)
+#If DEBUG Then
+            If _formHwnd = IntPtr.Zero Or _mainAccessHwnd = IntPtr.Zero Then
+                '################################################
+                _formHwnd = New IntPtr(920382) '################
+                '################################################
+                _mainAccessHwnd = New IntPtr(984580)
+            End If
+#Else
+            
             If args.Length <= 1 And Not DEBUG_MODE Then
                 MessageBox.Show("EROARE: Aplicatia poate fi pornita DOAR din AVACONT (/frm:? /acc:? ", "RTB_Start", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Environment.Exit(-1)
@@ -21,16 +32,8 @@ Module Start
                 End If
             Next
 
-#If DEBUG Then
             If _formHwnd = IntPtr.Zero Or _mainAccessHwnd = IntPtr.Zero Then
-                '################################################
-                _formHwnd = New IntPtr(1510336) '################
-                '################################################
-                _mainAccessHwnd = New IntPtr(3933810)
-            End If
-#Else
-            If _formHwnd = IntPtr.Zero Or _mainAccessHwnd = IntPtr.Zero Then
-                messagebox.show("EROARE: Parametrii de lansare invalizi!", "RTB_Load", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("EROARE: Parametrii de lansare invalizi!", "RTB_Load", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Environment.Exit(-1)
             End If
 #End If
@@ -53,10 +56,16 @@ Module Start
             End If
             ' ============================================
 
+            ' Creare instanță formular
+            frmRTB = New RTB()
+
+            ' Adăugare handlere pentru sincronizare cu Access
+            AddHandler frmRTB.txtExplicatieScurta.LostFocus, AddressOf ScrieInAccessExplicatieScurta
+            AddHandler frmRTB.rtbExplicatieLunga.LostFocus, AddressOf ScrieInAccessExplicatieLunga
+
             Dim spHwnd As IntPtr = SetParent(frmRTB.Handle, _formHwnd)
             'SetParent returneaza HWND-ul anterior al ferestrei copil daca reuseste, sau NULL daca esueaza
             If spHwnd = IntPtr.Zero Then
-                Marshal.GetLastWin32Error()
                 Dim dllErrInt As Integer = Marshal.GetLastWin32Error()
                 Dim dllErr As String = New Win32Exception(dllErrInt).Message
                 MessageBox.Show("EROARE: Formularul ACCESS nu este valid!" & ControlChars.CrLf & dllErr & ControlChars.CrLf & $"Form Handle:{_formHwnd}", "Tree_Load", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -64,9 +73,64 @@ Module Start
             End If
 
             PositioneazaInParent(frmRTB)
+            HookParentResize()
+            ' Pornire monitorizare fereastră părinte
+            AddHandler MonitorTimer.Elapsed, AddressOf VerificaFereastraParinte
+            MonitorTimer.Start()
+
+            ' Pornire application loop
+            Application.Run(frmRTB)
+
         Catch ex As Exception
             MessageBox.Show("EROARE: " & ex.Message, "RTB_Start", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Environment.Exit(-1)
         End Try
+    End Sub
+
+    Private Sub ScrieInAccessExplicatieScurta(sender As Object, e As EventArgs)
+        Try
+            If _accessApp Is Nothing Then Exit Sub
+
+            Dim targetForm As Object = GetFormObjectFromHwnd(_formHwnd)
+            If targetForm Is Nothing Then Exit Sub
+
+            Dim ctl As Object = targetForm.Controls("txtExplicatieScurta")
+            If ctl IsNot Nothing Then
+                ctl.Value = frmRTB.txtExplicatieScurta.Text
+            End If
+        Catch ex As Exception
+            Debug.WriteLine("Eroare scriere txtExplicatieScurta în Access: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub ScrieInAccessExplicatieLunga(sender As Object, e As EventArgs)
+        Try
+            If _accessApp Is Nothing Then Exit Sub
+
+            Dim targetForm As Object = GetFormObjectFromHwnd(_formHwnd)
+            If targetForm Is Nothing Then Exit Sub
+
+            Dim ctl As Object = targetForm.Controls("rtbExplicatieLunga")
+            If ctl IsNot Nothing Then
+                ctl.Value = frmRTB.rtbExplicatieLunga.Rtf
+            End If
+        Catch ex As Exception
+            Debug.WriteLine("Eroare scriere rtbExplicatieLunga în Access: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub VerificaFereastraParinte(sender As Object, e As Timers.ElapsedEventArgs)
+        If Not IsWindow(_formHwnd) OrElse Not IsWindow(_mainAccessHwnd) Then
+            MonitorTimer.Stop()
+            UnhookParentResize()
+
+            If frmRTB IsNot Nothing AndAlso frmRTB.IsHandleCreated Then
+                frmRTB.Invoke(Sub()
+                                  Application.Exit()
+                              End Sub)
+            Else
+                Environment.Exit(0)
+            End If
+        End If
     End Sub
 End Module
