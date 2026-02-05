@@ -10,6 +10,22 @@
 	<ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+<PropertyGroup>
+	<BaseName>VBA_DDF_INFO</BaseName>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Platform)' == 'x64'">
+	<AssemblyName>$(BaseName)_64</AssemblyName>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Platform)' == 'x86'">
+	<AssemblyName>$(BaseName)_32</AssemblyName>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
+	<AssemblyName>$(BaseName)</AssemblyName>
+</PropertyGroup>
+	
   <ItemGroup>
     <Import Include="System.Data" />
     <Import Include="System.Drawing" />
@@ -43,5 +59,4 @@
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>
-
 </Project>

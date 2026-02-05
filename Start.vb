@@ -11,12 +11,12 @@ Module Start
 #If DEBUG Then
             If _formHwnd = IntPtr.Zero Or _mainAccessHwnd = IntPtr.Zero Then
                 '################################################
-                _formHwnd = New IntPtr(920382) '################
+                _formHwnd = New IntPtr(3344204) '################
                 '################################################
-                _mainAccessHwnd = New IntPtr(984580)
+                _mainAccessHwnd = New IntPtr(300157418)
             End If
 #Else
-            
+
             If args.Length <= 1 And Not DEBUG_MODE Then
                 MessageBox.Show("EROARE: Aplicatia poate fi pornita DOAR din AVACONT (/frm:? /acc:? ", "RTB_Start", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Environment.Exit(-1)
@@ -50,7 +50,7 @@ Module Start
             _formParentHwnd = GetAccessFormParent(_formHwnd)
 
             If _formParentHwnd = IntPtr.Zero Then
-                Debug.WriteLine("AVERTISMENT: Nu s-a găsit formular părinte!")
+                _formParentHwnd = _formHwnd
             Else
                 Debug.WriteLine($"Formular părinte găsit: {GetWindowInfo(_formParentHwnd)}")
             End If

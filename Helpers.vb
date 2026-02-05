@@ -372,6 +372,25 @@ Module Helpers
         End Try
     End Function
 
+    Public Function SetValoareLocala(numeControl As String, valoare As String) As Boolean
+        ' 1. Găsim formularul de care suntem lipiți (ParentHwnd)
+        Dim targetForm As Object = GetFormObjectFromHwnd(_formHwnd)
+        If targetForm Is Nothing Then
+            MessageBox.Show("Eroare: Formularul Access țintă nu a fost găsit pentru setarea valorii controlului.", "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
+        End If
+        ' 2. Setăm controlul direct în acest formular
+        Try
+            Dim ctl As Object = targetForm.Controls(numeControl)
+            If ctl Is Nothing Then Return False
+            ctl.Value = valoare
+            Return True
+        Catch ex As Exception
+            Debug.WriteLine("Eroare la setarea valorii controlului: " & ex.Message)
+            Return False
+        End Try
+    End Function
+
     ' =============================================================
     ' FUNCȚII GENERALE - MONITORIZARE DIMENSIUNE PĂRINTE
     ' =============================================================
@@ -418,7 +437,7 @@ Module Helpers
     ' =============================================================
     ' CURĂȚARE RESURSE ȘI IEȘIRE
     ' =============================================================
-    Private Sub CurataResurseSiIesi()
+    Public Sub CurataResurseSiIesi()
         If _cleaningDone Then Return
         _cleaningDone = True
 

@@ -1,4 +1,5 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+﻿Imports VBA_DDF_INFO.CustomControls
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class RTB
     Inherits System.Windows.Forms.Form
 
@@ -29,6 +30,7 @@ Partial Class RTB
         lyDescrierePeLung = New TableLayoutPanel()
         pnlExplicatieHost = New Panel()
         pToolbarPanel = New Panel()
+        pCmbFonts = New NoFocusComboBox()
         pBtnBold = New NoFocusButton()
         pBtnItalic = New NoFocusButton()
         pBtnUnderline = New NoFocusButton()
@@ -36,6 +38,9 @@ Partial Class RTB
         pBtnBgColor = New NoFocusButton()
         rtbExplicatieLunga = New RichTextBox()
         flyButoane = New FlowLayoutPanel()
+        pnlFooter = New Panel()
+        BtnSave = New NoFocusButton()
+        BtnClose = New NoFocusButton()
         ToolTip1 = New ToolTip(components)
         pCtx = New ContextMenuStrip(components)
         tsiEliminaAtt = New ToolStripMenuItem()
@@ -48,13 +53,14 @@ Partial Class RTB
         lyDescrierePeLung.SuspendLayout()
         pnlExplicatieHost.SuspendLayout()
         pToolbarPanel.SuspendLayout()
+        pnlFooter.SuspendLayout()
         pCtx.SuspendLayout()
         SuspendLayout()
         ' 
         ' lblPrompt
         ' 
         lblPrompt.Dock = DockStyle.Fill
-        lblPrompt.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        lblPrompt.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         lblPrompt.Location = New Point(3, 0)
         lblPrompt.Name = "lblPrompt"
         lblPrompt.Size = New Size(794, 34)
@@ -65,7 +71,7 @@ Partial Class RTB
         ' Label1
         ' 
         Label1.Dock = DockStyle.Fill
-        Label1.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        Label1.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         Label1.Location = New Point(3, 0)
         Label1.Name = "Label1"
         Label1.Size = New Size(754, 34)
@@ -76,22 +82,24 @@ Partial Class RTB
         ' lyDescriereRevizie
         ' 
         lyDescriereRevizie.ColumnCount = 1
-        lyDescriereRevizie.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
+        lyDescriereRevizie.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         lyDescriereRevizie.Controls.Add(lblPrompt, 0, 0)
         lyDescriereRevizie.Controls.Add(txtExplicatieScurta, 0, 1)
         lyDescriereRevizie.Controls.Add(lyDescriereLungaLabel, 0, 2)
         lyDescriereRevizie.Controls.Add(lyDescrierePeLung, 0, 3)
         lyDescriereRevizie.Controls.Add(flyButoane, 0, 4)
+        lyDescriereRevizie.Controls.Add(pnlFooter, 0, 5)
         lyDescriereRevizie.Dock = DockStyle.Fill
         lyDescriereRevizie.Location = New Point(0, 0)
         lyDescriereRevizie.Margin = New Padding(0)
         lyDescriereRevizie.Name = "lyDescriereRevizie"
-        lyDescriereRevizie.RowCount = 5
-        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34.0F))
-        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34.0F))
-        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34.0F))
-        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
-        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 38.0F))
+        lyDescriereRevizie.RowCount = 6
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 38F))
+        lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 42F))
         lyDescriereRevizie.Size = New Size(800, 450)
         lyDescriereRevizie.TabIndex = 5
         ' 
@@ -99,7 +107,7 @@ Partial Class RTB
         ' 
         txtExplicatieScurta.BorderStyle = BorderStyle.FixedSingle
         txtExplicatieScurta.Dock = DockStyle.Fill
-        txtExplicatieScurta.Font = New Font("Consolas", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        txtExplicatieScurta.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         txtExplicatieScurta.Location = New Point(3, 34)
         txtExplicatieScurta.Margin = New Padding(3, 0, 3, 0)
         txtExplicatieScurta.Name = "txtExplicatieScurta"
@@ -109,8 +117,8 @@ Partial Class RTB
         ' lyDescriereLungaLabel
         ' 
         lyDescriereLungaLabel.ColumnCount = 2
-        lyDescriereLungaLabel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
-        lyDescriereLungaLabel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 40.0F))
+        lyDescriereLungaLabel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        lyDescriereLungaLabel.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 40F))
         lyDescriereLungaLabel.Controls.Add(Label1, 0, 0)
         lyDescriereLungaLabel.Controls.Add(btnAtasteazaDocumente, 1, 0)
         lyDescriereLungaLabel.Dock = DockStyle.Fill
@@ -118,7 +126,7 @@ Partial Class RTB
         lyDescriereLungaLabel.Margin = New Padding(0)
         lyDescriereLungaLabel.Name = "lyDescriereLungaLabel"
         lyDescriereLungaLabel.RowCount = 1
-        lyDescriereLungaLabel.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
+        lyDescriereLungaLabel.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
         lyDescriereLungaLabel.Size = New Size(800, 34)
         lyDescriereLungaLabel.TabIndex = 4
         ' 
@@ -140,15 +148,15 @@ Partial Class RTB
         ' lyDescrierePeLung
         ' 
         lyDescrierePeLung.ColumnCount = 1
-        lyDescrierePeLung.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
+        lyDescrierePeLung.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         lyDescrierePeLung.Controls.Add(pnlExplicatieHost, 0, 0)
         lyDescrierePeLung.Dock = DockStyle.Fill
         lyDescrierePeLung.Location = New Point(0, 102)
         lyDescrierePeLung.Margin = New Padding(0)
         lyDescrierePeLung.Name = "lyDescrierePeLung"
         lyDescrierePeLung.RowCount = 1
-        lyDescrierePeLung.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
-        lyDescrierePeLung.Size = New Size(800, 310)
+        lyDescrierePeLung.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        lyDescrierePeLung.Size = New Size(800, 268)
         lyDescrierePeLung.TabIndex = 5
         ' 
         ' pnlExplicatieHost
@@ -158,7 +166,7 @@ Partial Class RTB
         pnlExplicatieHost.Dock = DockStyle.Fill
         pnlExplicatieHost.Location = New Point(3, 3)
         pnlExplicatieHost.Name = "pnlExplicatieHost"
-        pnlExplicatieHost.Size = New Size(794, 304)
+        pnlExplicatieHost.Size = New Size(794, 262)
         pnlExplicatieHost.TabIndex = 0
         ' 
         ' pToolbarPanel
@@ -166,6 +174,7 @@ Partial Class RTB
         pToolbarPanel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         pToolbarPanel.BackColor = SystemColors.Window
         pToolbarPanel.BorderStyle = BorderStyle.FixedSingle
+        pToolbarPanel.Controls.Add(pCmbFonts)
         pToolbarPanel.Controls.Add(pBtnBold)
         pToolbarPanel.Controls.Add(pBtnItalic)
         pToolbarPanel.Controls.Add(pBtnUnderline)
@@ -178,81 +187,90 @@ Partial Class RTB
         pToolbarPanel.TabIndex = 0
         pToolbarPanel.Visible = False
         ' 
+        ' pCmbFonts
+        ' 
+        pCmbFonts.DropDownStyle = ComboBoxStyle.DropDownList
+        pCmbFonts.FlatStyle = FlatStyle.Popup
+        pCmbFonts.Font = New Font("Segoe UI", 10F)
+        pCmbFonts.Location = New Point(4, 4)
+        pCmbFonts.Name = "pCmbFonts"
+        pCmbFonts.Size = New Size(260, 36)
+        pCmbFonts.TabIndex = 5
+        ' 
         ' pBtnBold
         ' 
+        pBtnBold.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         pBtnBold.Cursor = Cursors.Hand
-        pBtnBold.FlatAppearance.BorderSize = 1
-        pBtnBold.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
-        pBtnBold.Location = New Point(4, 4)
+        pBtnBold.FlatStyle = FlatStyle.Flat
+        pBtnBold.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        pBtnBold.Location = New Point(270, 4)
         pBtnBold.Name = "pBtnBold"
         pBtnBold.Size = New Size(36, 36)
-        pBtnBold.TabIndex = 0
+        pBtnBold.TabIndex = 6
         pBtnBold.Text = "B"
-        pBtnBold.UseVisualStyleBackColor = True
+        pBtnBold.UseVisualStyleBackColor = False
         ' 
         ' pBtnItalic
         ' 
+        pBtnItalic.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         pBtnItalic.Cursor = Cursors.Hand
-        pBtnItalic.FlatAppearance.BorderSize = 1
-        pBtnItalic.Font = New Font("Segoe UI", 9.0F, FontStyle.Italic)
-        pBtnItalic.Location = New Point(41, 4)
+        pBtnItalic.FlatStyle = FlatStyle.Flat
+        pBtnItalic.Font = New Font("Segoe UI", 9F, FontStyle.Italic)
+        pBtnItalic.Location = New Point(307, 4)
         pBtnItalic.Name = "pBtnItalic"
         pBtnItalic.Size = New Size(36, 36)
-        pBtnItalic.TabIndex = 1
+        pBtnItalic.TabIndex = 7
         pBtnItalic.Text = "I"
-        pBtnItalic.UseVisualStyleBackColor = True
+        pBtnItalic.UseVisualStyleBackColor = False
         ' 
         ' pBtnUnderline
         ' 
+        pBtnUnderline.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         pBtnUnderline.Cursor = Cursors.Hand
-        pBtnUnderline.FlatAppearance.BorderSize = 1
-        pBtnUnderline.Font = New Font("Segoe UI", 9.0F, FontStyle.Underline)
-        pBtnUnderline.Location = New Point(78, 4)
+        pBtnUnderline.FlatStyle = FlatStyle.Flat
+        pBtnUnderline.Font = New Font("Segoe UI", 9F, FontStyle.Underline)
+        pBtnUnderline.Location = New Point(344, 4)
         pBtnUnderline.Name = "pBtnUnderline"
         pBtnUnderline.Size = New Size(36, 36)
-        pBtnUnderline.TabIndex = 2
+        pBtnUnderline.TabIndex = 8
         pBtnUnderline.Text = "U"
-        pBtnUnderline.UseVisualStyleBackColor = True
+        pBtnUnderline.UseVisualStyleBackColor = False
         ' 
         ' pBtnColor
         ' 
+        pBtnColor.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         pBtnColor.Cursor = Cursors.Hand
-        pBtnColor.FlatAppearance.BorderSize = 1
-        pBtnColor.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        pBtnColor.FlatStyle = FlatStyle.Flat
         pBtnColor.ForeColor = Color.Red
-        pBtnColor.Location = New Point(124, 4)
+        pBtnColor.Location = New Point(390, 4)
         pBtnColor.Name = "pBtnColor"
         pBtnColor.Size = New Size(36, 36)
-        pBtnColor.TabIndex = 3
+        pBtnColor.TabIndex = 9
         pBtnColor.Text = "A"
-        pBtnColor.UseVisualStyleBackColor = True
+        pBtnColor.UseVisualStyleBackColor = False
         ' 
         ' pBtnBgColor
         ' 
+        pBtnBgColor.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         pBtnBgColor.Cursor = Cursors.Hand
-        pBtnBgColor.FlatAppearance.BorderSize = 1
-        pBtnBgColor.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
-        pBtnBgColor.ForeColor = Color.Yellow
-        pBtnBgColor.Location = New Point(161, 4)
+        pBtnBgColor.FlatStyle = FlatStyle.Flat
+        pBtnBgColor.ForeColor = Color.SteelBlue
+        pBtnBgColor.Location = New Point(427, 4)
         pBtnBgColor.Name = "pBtnBgColor"
         pBtnBgColor.Size = New Size(36, 36)
-        pBtnBgColor.TabIndex = 4
+        pBtnBgColor.TabIndex = 10
         pBtnBgColor.Text = "▄"
-        pBtnBgColor.UseVisualStyleBackColor = True
+        pBtnBgColor.UseVisualStyleBackColor = False
         ' 
         ' rtbExplicatieLunga
         ' 
         rtbExplicatieLunga.AcceptsTab = True
         rtbExplicatieLunga.BorderStyle = BorderStyle.FixedSingle
-        rtbExplicatieLunga.BulletIndent = 2
         rtbExplicatieLunga.Dock = DockStyle.Fill
-        rtbExplicatieLunga.Font = New Font("Consolas", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        rtbExplicatieLunga.Font = New Font("Consolas", 9F)
         rtbExplicatieLunga.Location = New Point(0, 0)
-        rtbExplicatieLunga.Margin = New Padding(3, 0, 3, 0)
         rtbExplicatieLunga.Name = "rtbExplicatieLunga"
-        rtbExplicatieLunga.ScrollBars = RichTextBoxScrollBars.Vertical
-        rtbExplicatieLunga.ShowSelectionMargin = True
-        rtbExplicatieLunga.Size = New Size(794, 304)
+        rtbExplicatieLunga.Size = New Size(794, 262)
         rtbExplicatieLunga.TabIndex = 3
         rtbExplicatieLunga.Text = ""
         ' 
@@ -260,18 +278,69 @@ Partial Class RTB
         ' 
         flyButoane.AutoScroll = True
         flyButoane.Dock = DockStyle.Fill
-        flyButoane.Location = New Point(0, 412)
+        flyButoane.Location = New Point(0, 370)
         flyButoane.Margin = New Padding(0)
         flyButoane.Name = "flyButoane"
         flyButoane.Size = New Size(800, 38)
         flyButoane.TabIndex = 6
         ' 
+        ' pnlFooter
+        ' 
+        pnlFooter.BackColor = Color.FromArgb(CByte(245), CByte(245), CByte(245))
+        pnlFooter.Controls.Add(BtnSave)
+        pnlFooter.Controls.Add(BtnClose)
+        pnlFooter.Dock = DockStyle.Fill
+        pnlFooter.Location = New Point(0, 408)
+        pnlFooter.Margin = New Padding(0)
+        pnlFooter.Name = "pnlFooter"
+        pnlFooter.Size = New Size(800, 42)
+        pnlFooter.TabIndex = 7
+        ' 
+        ' BtnSave
+        ' 
+        BtnSave.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
+        BtnSave.Cursor = Cursors.Hand
+        BtnSave.Dock = DockStyle.Right
+        BtnSave.FlatAppearance.BorderSize = 0
+        BtnSave.FlatAppearance.MouseOverBackColor = SystemColors.Info
+        BtnSave.FlatStyle = FlatStyle.Flat
+        BtnSave.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        BtnSave.ForeColor = Color.Black
+        BtnSave.Image = My.Resources.Resources.floppy_disc
+        BtnSave.ImageAlign = ContentAlignment.MiddleRight
+        BtnSave.Location = New Point(625, 0)
+        BtnSave.Name = "BtnSave"
+        BtnSave.Size = New Size(175, 42)
+        BtnSave.TabIndex = 1
+        BtnSave.Text = "SALVEAZĂ"
+        BtnSave.TextAlign = ContentAlignment.MiddleLeft
+        BtnSave.UseVisualStyleBackColor = True
+        ' 
+        ' BtnClose
+        ' 
+        BtnClose.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
+        BtnClose.Cursor = Cursors.Hand
+        BtnClose.Dock = DockStyle.Left
+        BtnClose.FlatAppearance.BorderSize = 0
+        BtnClose.FlatAppearance.MouseOverBackColor = SystemColors.ActiveCaption
+        BtnClose.FlatStyle = FlatStyle.Flat
+        BtnClose.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        BtnClose.ForeColor = Color.Black
+        BtnClose.Image = My.Resources.Resources.logout
+        BtnClose.ImageAlign = ContentAlignment.MiddleLeft
+        BtnClose.Location = New Point(0, 0)
+        BtnClose.Name = "BtnClose"
+        BtnClose.Size = New Size(175, 42)
+        BtnClose.TabIndex = 0
+        BtnClose.Text = "ÎNCHIDE"
+        BtnClose.TextAlign = ContentAlignment.MiddleRight
+        BtnClose.UseVisualStyleBackColor = True
+        ' 
         ' pCtx
         ' 
         pCtx.ImageScalingSize = New Size(24, 24)
         pCtx.Items.AddRange(New ToolStripItem() {tsiEliminaAtt, ToolStripSeparator4, tsiDeschideAtt})
-        pCtx.Name = "ContextMenuStrip1"
-        pCtx.RenderMode = ToolStripRenderMode.Professional
+        pCtx.Name = "pCtx"
         pCtx.Size = New Size(251, 74)
         ' 
         ' tsiEliminaAtt
@@ -294,24 +363,19 @@ Partial Class RTB
         ' RTB
         ' 
         AutoScaleMode = AutoScaleMode.None
-        AutoSize = True
         BackColor = Color.White
         ClientSize = New Size(800, 450)
         ControlBox = False
         Controls.Add(lyDescriereRevizie)
-        DoubleBuffered = True
         FormBorderStyle = FormBorderStyle.None
         Name = "RTB"
-        ShowIcon = False
-        ShowInTaskbar = False
-        SizeGripStyle = SizeGripStyle.Hide
-        Text = "RTB"
         lyDescriereRevizie.ResumeLayout(False)
         lyDescriereRevizie.PerformLayout()
         lyDescriereLungaLabel.ResumeLayout(False)
         lyDescrierePeLung.ResumeLayout(False)
         pnlExplicatieHost.ResumeLayout(False)
         pToolbarPanel.ResumeLayout(False)
+        pnlFooter.ResumeLayout(False)
         pCtx.ResumeLayout(False)
         ResumeLayout(False)
     End Sub
@@ -330,10 +394,13 @@ Partial Class RTB
     Friend WithEvents pBtnBgColor As NoFocusButton
     Friend WithEvents rtbExplicatieLunga As RichTextBox
     Friend WithEvents flyButoane As FlowLayoutPanel
+    Friend WithEvents pnlFooter As Panel
+    Friend WithEvents BtnClose As NoFocusButton
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents pCtx As ContextMenuStrip
     Friend WithEvents tsiEliminaAtt As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
     Friend WithEvents tsiDeschideAtt As ToolStripMenuItem
-
+    Friend WithEvents pCmbFonts As NoFocusComboBox
+    Friend WithEvents BtnSave As NoFocusButton
 End Class
