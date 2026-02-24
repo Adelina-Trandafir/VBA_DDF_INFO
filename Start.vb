@@ -2,6 +2,8 @@
 Imports System.Runtime.InteropServices
 
 Module Start
+    Private ReadOnly Ver As Single = CSng(Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major)
+
     Sub Main()
         Try
             Dim args As String() = Environment.GetCommandLineArgs()
@@ -11,14 +13,14 @@ Module Start
 #If DEBUG Then
             If _formHwnd = IntPtr.Zero Or _mainAccessHwnd = IntPtr.Zero Then
                 '################################################
-                _formHwnd = New IntPtr(3344204) '################
+                _formHwnd = New IntPtr(5509778) '################
                 '################################################
-                _mainAccessHwnd = New IntPtr(300157418)
+                _mainAccessHwnd = New IntPtr(7012612)
             End If
 #Else
 
             If args.Length <= 1 And Not DEBUG_MODE Then
-                MessageBox.Show("EROARE: Aplicatia poate fi pornita DOAR din AVACONT (/frm:? /acc:? ", "RTB_Start", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("EROARE: Aplicatia poate fi pornita DOAR din AVACONT (/frm:? /acc:? ", $"RTB_Start v{Ver}", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Environment.Exit(-1)
             End If
 
@@ -51,10 +53,13 @@ Module Start
 
             If _formParentHwnd = IntPtr.Zero Then
                 _formParentHwnd = _formHwnd
-            Else
-                Debug.WriteLine($"Formular părinte găsit: {GetWindowInfo(_formParentHwnd)}")
             End If
             ' ============================================
+
+            If Not IsWindow(_formHwnd) OrElse Not IsWindow(_formParentHwnd) Then
+                MessageBox.Show("EROARE: Fereastra formular Access invalida!", "RTB_Start", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Environment.Exit(-1)
+            End If
 
             ' Creare instanță formular
             frmRTB = New RTB()

@@ -1,7 +1,8 @@
 ﻿Imports System.Runtime.InteropServices
 
 Module Helpers
-    Public frmRTB As RTB
+    Public Property frmRTB As RTB
+
     Public DEBUG_MODE As Boolean = False
     Public _formHwnd As IntPtr = IntPtr.Zero
     Public _mainAccessHwnd As IntPtr = IntPtr.Zero
@@ -18,6 +19,10 @@ Module Helpers
     ' =============================================================
     ' CONSOLA DEBUG - API
     ' =============================================================
+    <DllImport("user32.dll")>
+    Public Function BringWindowToTop(ByVal hWnd As IntPtr) As Boolean
+    End Function
+
     <DllImport("user32.dll")>
     Public Function GetForegroundWindow() As IntPtr
     End Function
@@ -300,28 +305,40 @@ Module Helpers
     ' =============================================================
     ' FUNCȚII GENERALE - ACCESS HELPERS
     ' =============================================================
-    Public Sub ConecteazaLaAccess(hwndAccess As IntPtr)
-        Dim guidIDispatch As New Guid("{00020400-0000-0000-C000-000000000046}") ' IID_IDispatch
-        Dim obj As Object = Nothing
+    Public Function ConecteazaLaAccess(hwndAccess As IntPtr) As Boolean
+        Try
+            Dim guidIDispatch As New Guid("{00020400-0000-0000-C000-000000000046}") ' IID_IDispatch
+            Dim obj As Object = Nothing
 
-        ' Această funcție returnează obiectul "Window" din modelul de obiecte Access
-        Dim hr As Integer = AccessibleObjectFromWindow(hwndAccess, OBJID_NATIVEOM, guidIDispatch, obj)
-
-        If hr >= 0 AndAlso obj IsNot Nothing Then
             Try
-                ' Din obiectul Window, urcăm la Application
-                Dim windowObj As Object = obj
-                _accessApp = windowObj.Application
+                ' Această funcție returnează obiectul "Window" din modelul de obiecte Access
+                Dim hr As Integer = AccessibleObjectFromWindow(hwndAccess, OBJID_NATIVEOM, guidIDispatch, obj)
+
+                If hr >= 0 AndAlso obj IsNot Nothing Then
+                    Try
+                        ' Din obiectul Window, urcăm la Application
+                        Dim windowObj As Object = obj
+                        _accessApp = windowObj.Application
+
+                    Catch ex As Exception
+                        MessageBox.Show("Eroare la obținerea Application din Window: " & ex.Message, "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        Application.Exit()
+                    End Try
+                Else
+                    MessageBox.Show("Nu s-a putut obține obiectul COM din HWND.", "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Application.Exit()
+                End If
 
             Catch ex As Exception
-                MessageBox.Show("Eroare la obținerea Application din Window: " & ex.Message, "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("Eroare la conectarea COM: " & ex.Message, "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Application.Exit()
             End Try
-        Else
-            MessageBox.Show("Nu s-a putut obține obiectul COM din HWND.", "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Catch ex As Exception
+            MessageBox.Show("Eroare la pregătirea conectării COM: " & ex.Message, "EROARE", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Application.Exit()
-        End If
-    End Sub
+        End Try
+
+    End Function
 
     Public Function GetAccessFormParent(childHwnd As IntPtr) As IntPtr
         ' Urcă ierarhia până găsește fereastra de tip formular Access (top-level sau popup)
@@ -350,7 +367,7 @@ Module Helpers
         Return IntPtr.Zero
     End Function
 
-    Private Function GetValoareLocala(numeControl As String) As String
+    Public Function GetValoareLocala(numeControl As String) As String
         ' 1. Găsim formularul de care suntem lipiți (ParentHwnd)
         Dim targetForm As Object = GetFormObjectFromHwnd(_formHwnd)
 
@@ -370,6 +387,34 @@ Module Helpers
         Catch ex As Exception
             Return "Err: " & ex.Message
         End Try
+    End Function
+
+    Public Function GetSubformData(subformControlName As String) As List(Of Dictionary(Of String, Object))
+        Dim result As New List(Of Dictionary(Of String, Object))
+        Dim targetForm As Object = GetFormObjectFromHwnd(_formHwnd)
+        If targetForm Is Nothing Then Return result
+
+        Try
+            ' Accesează subform-ul
+            Dim subformCtl As Object = targetForm.Controls(subformControlName)
+            Dim subform As Object = subformCtl.Form
+            Dim rs As Object = subform.RecordsetClone
+
+            rs.MoveFirst()
+            Do While Not CBool(rs.EOF)
+                Dim row As New Dictionary(Of String, Object)
+                For i As Integer = 0 To rs.Fields.Count - 1
+                    row(rs.Fields(i).name) = rs.Fields(i).Value
+                Next
+                result.Add(row)
+                rs.MoveNext()
+            Loop
+        Catch ex As Exception
+            Debug.WriteLine("Eroare citire subform: " & ex.Message)
+        End Try
+
+        Return result
+
     End Function
 
     Public Function SetValoareLocala(numeControl As String, valoare As String) As Boolean
@@ -459,4 +504,39 @@ Module Helpers
         GC.Collect()
         GC.Collect()
     End Sub
+
+    '============================================================
+    ' FUNCȚII GENERALE - SAFE GETTERS
+    '============================================================
+    Public Function SafeGetInt(dict As Dictionary(Of String, Object), key As String) As Integer
+        If dict.ContainsKey(key) AndAlso dict(key) IsNot Nothing AndAlso Not IsDBNull(dict(key)) Then
+            Try
+                Return Convert.ToInt32(dict(key))
+            Catch
+                Return -1
+            End Try
+        End If
+        Return -1
+    End Function
+
+    Public Function SafeGetString(dict As Dictionary(Of String, Object), key As String) As String
+        If dict.ContainsKey(key) AndAlso dict(key) IsNot Nothing AndAlso Not IsDBNull(dict(key)) Then
+            Return Convert.ToString(dict(key))
+        End If
+        Return ""
+    End Function
+
+    Public Function SafeGetBytes(dict As Dictionary(Of String, Object), key As String) As Byte()
+        If dict.ContainsKey(key) AndAlso dict(key) IsNot Nothing AndAlso Not IsDBNull(dict(key)) Then
+            Try
+                Dim base64 As String = Convert.ToString(dict(key))
+                If Not String.IsNullOrEmpty(base64) Then
+                    Return Convert.FromBase64String(base64)
+                End If
+            Catch ex As Exception
+                Debug.WriteLine("Eroare decodare Base64: " & ex.Message)
+            End Try
+        End If
+        Return Array.Empty(Of Byte)()
+    End Function
 End Module

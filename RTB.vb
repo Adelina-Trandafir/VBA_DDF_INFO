@@ -1,4 +1,6 @@
-﻿Public Class RTB
+﻿Imports VBA_DDF_INFO.CustomControls
+
+Public Class RTB
     Implements IMessageFilter
 
     Private Property InfoCurent As New Model()
@@ -27,6 +29,7 @@
         Public Property FileData As Byte() = Array.Empty(Of Byte)
         Public Property IsDeleted As Boolean = False
         Public Property IsNew As Boolean = True
+        Public Property ID As Integer
     End Class
 
     ' butoanele dinamice pentru atașamente
@@ -61,7 +64,37 @@
         PopuleazaSelectorFonturi()
 
         ' Citire date din Access la deschidere
-        CitesteDateDinAccess()
+        'CitesteDateDinAccess()
+        txtExplicatieScurta.Text = Helpers.GetValoareLocala("txtExplicatieScurta")
+
+        Dim txt As String = Helpers.GetValoareLocala("rtbExplicatieLunga")
+
+        If Not String.IsNullOrEmpty(txt) AndAlso txt.TrimStart().StartsWith("{\rtf", StringComparison.OrdinalIgnoreCase) Then
+            rtbExplicatieLunga.Rtf = txt
+        Else
+            rtbExplicatieLunga.Text = txt
+        End If
+
+        ' Citeste date din subformul cu atasamente
+        Dim lstAtt As List(Of Dictionary(Of String, Object)) = Helpers.GetSubformData("ATT")
+
+        ' Populare butoane atasamente existente
+        For Each dict In lstAtt
+            Try
+                Dim att As New AttachementModel With {
+                    .IdAttachProp = lstAtt.IndexOf(dict) + 1,
+                    .ID = dict.TryGetValue("IDVBNET", -1),
+                    .FilePath = SafeGetString(dict, "CaleFisier"),
+                    .FileData = Convert.FromBase64String(SafeGetString(dict, "DateFisier")),
+                    .IsDeleted = False,
+                    .IsNew = False
+                }
+                InfoCurent.Attachments.Add(att)
+                AddAttachmentButton(att, False)
+            Catch ex As Exception
+                Debug.WriteLine("Eroare la încărcarea unui atașament: " & ex.Message)
+            End Try
+        Next
     End Sub
 
     Private Sub RTB_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
@@ -167,7 +200,7 @@
         HideToolbar()
     End Sub
 
-    Private Sub rtbExplicatieLunga_SelectionChanged(sender As Object, e As EventArgs) Handles rtbExplicatieLunga.SelectionChanged
+    Private Sub RtbExplicatieLunga_SelectionChanged(sender As Object, e As EventArgs) Handles rtbExplicatieLunga.SelectionChanged
         ActualizeazaStareButoane()
     End Sub
 
@@ -214,7 +247,7 @@
     ' ******************************************************************
     '  FORMATARE TEXT - butoane toolbar
     ' ******************************************************************
-    Private Sub pCmbFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles pCmbFonts.SelectedIndexChanged
+    Private Sub PCmbFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles pCmbFonts.SelectedIndexChanged
         ' Verificăm dacă există o selecție sau un font de bază
         If rtbExplicatieLunga Is Nothing Then Exit Sub
 
@@ -266,29 +299,35 @@
         pIgnoreLostFocus = False
     End Sub
 
-    Private Sub pBtnBold_Click(sender As Object, e As EventArgs) Handles pBtnBold.Click
+    Private Sub PBtnBold_Click(sender As Object, e As EventArgs) Handles pBtnBold.Click
         ToggleStyle(FontStyle.Bold)
     End Sub
 
-    Private Sub pBtnItalic_Click(sender As Object, e As EventArgs) Handles pBtnItalic.Click
+    Private Sub PBtnItalic_Click(sender As Object, e As EventArgs) Handles pBtnItalic.Click
         ToggleStyle(FontStyle.Italic)
     End Sub
 
-    Private Sub pBtnUnderline_Click(sender As Object, e As EventArgs) Handles pBtnUnderline.Click
+    Private Sub PBtnUnderline_Click(sender As Object, e As EventArgs) Handles pBtnUnderline.Click
         ToggleStyle(FontStyle.Underline)
     End Sub
 
-    Private Sub pBtnColor_Click(sender As Object, e As EventArgs) Handles pBtnColor.Click
+    Private Sub PBtnColor_Click(sender As Object, e As EventArgs) Handles pBtnColor.Click
         PickColor(False)
     End Sub
 
-    Private Sub pBtnBgColor_Click(sender As Object, e As EventArgs) Handles pBtnBgColor.Click
+    Private Sub PBtnBgColor_Click(sender As Object, e As EventArgs) Handles pBtnBgColor.Click
         PickColor(True)
     End Sub
 
     ' ******************************************************************
     '  ATAȘAMENTE
     ' ******************************************************************
+    Private Sub PCtx_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles pCtx.Closed
+        pIgnoreLostFocus = False
+        ' Forțăm focusul înapoi pe RichTextBox pentru a menține modalul "activ"
+        rtbExplicatieLunga.Focus()
+    End Sub
+
     Private Sub BtnAtasteazaDocumente_Click(sender As Object, e As EventArgs) Handles btnAtasteazaDocumente.Click
         Using d As New OpenFileDialog()
             d.Filter = "Documente|*.pdf;*.jpg;*.jpeg;*.png"
@@ -300,7 +339,8 @@
                 Dim att As New AttachementModel With {
                     .FilePath = f,
                     .FileData = IO.File.ReadAllBytes(f),
-                    .IsDeleted = False
+                    .IsDeleted = False,
+                    .ID = If(InfoCurent.Attachments.Count = 0, 1, InfoCurent.Attachments.Max(Function(a) a.ID) + 1)
                 }
 
                 If Not InfoCurent.Attachments.Contains(att) Then
@@ -311,25 +351,42 @@
         End Using
     End Sub
 
-    Private Sub AddAttachmentButton(att As AttachementModel)
-        Dim btn As New Button With {
+    Private Sub AddAttachmentButton(att As AttachementModel, Optional sendToAccess As Boolean = True)
+        Try
+            Dim btn As New NoFocusButton With {
             .Text = "Attachment",
             .Height = 34,
             .Width = 120,
             .Margin = New Padding(0),
             .Tag = att
         }
-        ToolTip1.SetToolTip(btn, IO.Path.GetFileName(att.FilePath))
+            ToolTip1.SetToolTip(btn, IO.Path.GetFileName(att.FilePath))
 
-        AddHandler btn.Click,
+            AddHandler btn.Click,
             Sub(s, ev)
-                pCtxCurrentAttachment = DirectCast(btn.Tag, AttachementModel)
-                tsiEliminaAtt.Visible = IsNew
-                pCtx.Show(btn, 0, btn.Height)
+                Me.BeginInvoke(Sub()
+                                   pIgnoreLostFocus = True
+                                   pCtxCurrentAttachment = DirectCast(btn.Tag, AttachementModel)
+                                   tsiEliminaAtt.Visible = IsNew
+
+                                   ' Afisam meniul
+                                   pCtx.Show(btn, 0, btn.Height)
+
+                                   '' Fortam fereastra sa ramana in fata daca Access a incercat sa o trimita in spate
+                                   If _formHwnd <> IntPtr.Zero Then
+                                       Helpers.BringWindowToTop(_formHwnd)
+                                   End If
+                               End Sub)
             End Sub
 
-        flyButoane.Controls.Add(btn)
-        pAttachmentButtons.Add(btn)
+            flyButoane.Controls.Add(btn)
+            pAttachmentButtons.Add(btn)
+
+            If sendToAccess Then NotifyAccessOfAttachment(btn.Tag)
+
+        Catch ex As Exception
+            MessageBox.Show("Eroare la adăugarea atașamentului: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub RemoveAttachment(btn As Button)
@@ -340,6 +397,8 @@
         flyButoane.Controls.Remove(btn)
         pAttachmentButtons.Remove(btn)
         btn.Dispose()
+
+        NotifyAccessOfAttachment(att, True)
     End Sub
 
     Private Sub TsiDeschideAtt_Click(sender As Object, e As EventArgs) Handles tsiDeschideAtt.Click
@@ -365,6 +424,22 @@
         pCtxCurrentAttachment = Nothing
     End Sub
 
+    Private Sub NotifyAccessOfAttachment(att As AttachementModel, Optional isDelete As Boolean = False)
+        Try
+            ' 1. Citim fisierul si il convertim in Base64
+            Dim base64String As String = Convert.ToBase64String(att.FileData)
+
+            If isDelete Then
+                _accessApp?.Run("HandleAttachment", att.ID, "", "", True)
+
+            Else
+                _accessApp?.Run("HandleAttachment", att.ID, base64String, att.FilePath, False)
+
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Eroare la trimiterea datelor catre Access: " & ex.Message)
+        End Try
+    End Sub
     ' ******************************************************************
     '  VALIDARE
     ' ******************************************************************

@@ -1,62 +1,65 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<StartupObject>Sub Main</StartupObject>
+		<UseWindowsForms>true</UseWindowsForms>
+		<MyType>Empty</MyType>
+		<Platforms>AnyCPU;x64;x86</Platforms>
+		<ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+		<AssemblyName>VBA_DDF_INFO</AssemblyName>
+		<ApplicationIcon>Gemini_Generated_Image_51otpx51otpx51ot.ico</ApplicationIcon>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <StartupObject>Sub Main</StartupObject>
-    <UseWindowsForms>true</UseWindowsForms>
-    <MyType>Empty</MyType>
-	<Platforms>AnyCPU;x64;x86</Platforms>
-	<ApplicationManifest>My Project\app.manifest</ApplicationManifest>
-  </PropertyGroup>
-
-<PropertyGroup>
-	<BaseName>VBA_DDF_INFO</BaseName>
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(Platform)' == 'x64'">
-	<AssemblyName>$(BaseName)_64</AssemblyName>
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(Platform)' == 'x86'">
-	<AssemblyName>$(BaseName)_32</AssemblyName>
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
-	<AssemblyName>$(BaseName)</AssemblyName>
-</PropertyGroup>
+	<PropertyGroup>
+		<FileVersion>3.0.0.0</FileVersion>
+		<AssemblyVersion>3.0.0.0</AssemblyVersion>
+	</PropertyGroup>
 	
-  <ItemGroup>
-    <Import Include="System.Data" />
-    <Import Include="System.Drawing" />
-    <Import Include="System.Windows.Forms" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Platform)' == 'x64' Or '$(PlatformTarget)' == 'x64' Or '$(RuntimeIdentifier)' == 'win-x64'">
+		<AssemblyName>VBA_DDF_INFO_64</AssemblyName>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="My Project\Application.Designer.vb">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Application.myapp</DependentUpon>
-    </Compile>
-    <Compile Update="My Project\Resources.Designer.vb">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Platform)' == 'x86' Or '$(PlatformTarget)' == 'x86' Or '$(RuntimeIdentifier)' == 'win-x86'">
+		<AssemblyName>VBA_DDF_INFO_32</AssemblyName>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="My Project\Resources.resx">
-      <CustomToolNamespace>My.Resources</CustomToolNamespace>
-      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+	  <Content Include="Gemini_Generated_Image_51otpx51otpx51ot.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="My Project\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.vb</LastGenOutput>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Import Include="System.Data" />
+		<Import Include="System.Drawing" />
+		<Import Include="System.Windows.Forms" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="My Project\Application.Designer.vb">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Application.myapp</DependentUpon>
+		</Compile>
+		<Compile Update="My Project\Resources.Designer.vb">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="My Project\Resources.resx">
+			<CustomToolNamespace>My.Resources</CustomToolNamespace>
+			<Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.vb</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="My Project\Application.myapp">
+			<Generator>MyApplicationCodeGenerator</Generator>
+			<LastGenOutput>Application.Designer.vb</LastGenOutput>
+		</None>
+	</ItemGroup>
+
 </Project>

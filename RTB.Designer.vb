@@ -61,9 +61,9 @@ Partial Class RTB
         ' 
         lblPrompt.Dock = DockStyle.Fill
         lblPrompt.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        lblPrompt.Location = New Point(3, 0)
+        lblPrompt.Location = New Point(5, 2)
         lblPrompt.Name = "lblPrompt"
-        lblPrompt.Size = New Size(794, 34)
+        lblPrompt.Size = New Size(790, 34)
         lblPrompt.TabIndex = 2
         lblPrompt.Text = "Descrierea pe scurt a obiectului documentului de fundamentare/motivul revizuirii"
         lblPrompt.TextAlign = ContentAlignment.MiddleLeft
@@ -74,13 +74,15 @@ Partial Class RTB
         Label1.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         Label1.Location = New Point(3, 0)
         Label1.Name = "Label1"
-        Label1.Size = New Size(754, 34)
+        Label1.Size = New Size(750, 34)
         Label1.TabIndex = 0
         Label1.Text = "Descrierea pe larg a stării de fapt și de drept"
         Label1.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lyDescriereRevizie
         ' 
+        lyDescriereRevizie.BackColor = SystemColors.Control
+        lyDescriereRevizie.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
         lyDescriereRevizie.ColumnCount = 1
         lyDescriereRevizie.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         lyDescriereRevizie.Controls.Add(lblPrompt, 0, 0)
@@ -93,6 +95,7 @@ Partial Class RTB
         lyDescriereRevizie.Location = New Point(0, 0)
         lyDescriereRevizie.Margin = New Padding(0)
         lyDescriereRevizie.Name = "lyDescriereRevizie"
+        lyDescriereRevizie.Padding = New Padding(1)
         lyDescriereRevizie.RowCount = 6
         lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
         lyDescriereRevizie.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
@@ -108,10 +111,10 @@ Partial Class RTB
         txtExplicatieScurta.BorderStyle = BorderStyle.FixedSingle
         txtExplicatieScurta.Dock = DockStyle.Fill
         txtExplicatieScurta.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        txtExplicatieScurta.Location = New Point(3, 34)
+        txtExplicatieScurta.Location = New Point(5, 37)
         txtExplicatieScurta.Margin = New Padding(3, 0, 3, 0)
         txtExplicatieScurta.Name = "txtExplicatieScurta"
-        txtExplicatieScurta.Size = New Size(794, 29)
+        txtExplicatieScurta.Size = New Size(790, 29)
         txtExplicatieScurta.TabIndex = 3
         ' 
         ' lyDescriereLungaLabel
@@ -122,12 +125,12 @@ Partial Class RTB
         lyDescriereLungaLabel.Controls.Add(Label1, 0, 0)
         lyDescriereLungaLabel.Controls.Add(btnAtasteazaDocumente, 1, 0)
         lyDescriereLungaLabel.Dock = DockStyle.Fill
-        lyDescriereLungaLabel.Location = New Point(0, 68)
+        lyDescriereLungaLabel.Location = New Point(2, 72)
         lyDescriereLungaLabel.Margin = New Padding(0)
         lyDescriereLungaLabel.Name = "lyDescriereLungaLabel"
         lyDescriereLungaLabel.RowCount = 1
         lyDescriereLungaLabel.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        lyDescriereLungaLabel.Size = New Size(800, 34)
+        lyDescriereLungaLabel.Size = New Size(796, 34)
         lyDescriereLungaLabel.TabIndex = 4
         ' 
         ' btnAtasteazaDocumente
@@ -137,7 +140,7 @@ Partial Class RTB
         btnAtasteazaDocumente.FlatStyle = FlatStyle.Flat
         btnAtasteazaDocumente.ForeColor = SystemColors.HotTrack
         btnAtasteazaDocumente.Image = My.Resources.Resources.attach_file
-        btnAtasteazaDocumente.Location = New Point(760, 0)
+        btnAtasteazaDocumente.Location = New Point(756, 0)
         btnAtasteazaDocumente.Margin = New Padding(0)
         btnAtasteazaDocumente.Name = "btnAtasteazaDocumente"
         btnAtasteazaDocumente.Size = New Size(36, 34)
@@ -151,12 +154,12 @@ Partial Class RTB
         lyDescrierePeLung.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         lyDescrierePeLung.Controls.Add(pnlExplicatieHost, 0, 0)
         lyDescrierePeLung.Dock = DockStyle.Fill
-        lyDescrierePeLung.Location = New Point(0, 102)
+        lyDescrierePeLung.Location = New Point(2, 107)
         lyDescrierePeLung.Margin = New Padding(0)
         lyDescrierePeLung.Name = "lyDescrierePeLung"
         lyDescrierePeLung.RowCount = 1
         lyDescrierePeLung.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        lyDescrierePeLung.Size = New Size(800, 268)
+        lyDescrierePeLung.Size = New Size(796, 259)
         lyDescrierePeLung.TabIndex = 5
         ' 
         ' pnlExplicatieHost
@@ -166,7 +169,7 @@ Partial Class RTB
         pnlExplicatieHost.Dock = DockStyle.Fill
         pnlExplicatieHost.Location = New Point(3, 3)
         pnlExplicatieHost.Name = "pnlExplicatieHost"
-        pnlExplicatieHost.Size = New Size(794, 262)
+        pnlExplicatieHost.Size = New Size(790, 253)
         pnlExplicatieHost.TabIndex = 0
         ' 
         ' pToolbarPanel
@@ -183,15 +186,17 @@ Partial Class RTB
         pToolbarPanel.Location = New Point(0, 0)
         pToolbarPanel.Margin = New Padding(0)
         pToolbarPanel.Name = "pToolbarPanel"
-        pToolbarPanel.Size = New Size(794, 44)
+        pToolbarPanel.Size = New Size(790, 44)
         pToolbarPanel.TabIndex = 0
         pToolbarPanel.Visible = False
         ' 
         ' pCmbFonts
         ' 
         pCmbFonts.DropDownStyle = ComboBoxStyle.DropDownList
-        pCmbFonts.FlatStyle = FlatStyle.Popup
+        pCmbFonts.FlatStyle = FlatStyle.Flat
         pCmbFonts.Font = New Font("Segoe UI", 10F)
+        pCmbFonts.IntegralHeight = False
+        pCmbFonts.ItemHeight = 28
         pCmbFonts.Location = New Point(4, 4)
         pCmbFonts.Name = "pCmbFonts"
         pCmbFonts.Size = New Size(260, 36)
@@ -270,7 +275,7 @@ Partial Class RTB
         rtbExplicatieLunga.Font = New Font("Consolas", 9F)
         rtbExplicatieLunga.Location = New Point(0, 0)
         rtbExplicatieLunga.Name = "rtbExplicatieLunga"
-        rtbExplicatieLunga.Size = New Size(794, 262)
+        rtbExplicatieLunga.Size = New Size(790, 253)
         rtbExplicatieLunga.TabIndex = 3
         rtbExplicatieLunga.Text = ""
         ' 
@@ -278,10 +283,10 @@ Partial Class RTB
         ' 
         flyButoane.AutoScroll = True
         flyButoane.Dock = DockStyle.Fill
-        flyButoane.Location = New Point(0, 370)
+        flyButoane.Location = New Point(2, 367)
         flyButoane.Margin = New Padding(0)
         flyButoane.Name = "flyButoane"
-        flyButoane.Size = New Size(800, 38)
+        flyButoane.Size = New Size(796, 38)
         flyButoane.TabIndex = 6
         ' 
         ' pnlFooter
@@ -290,10 +295,10 @@ Partial Class RTB
         pnlFooter.Controls.Add(BtnSave)
         pnlFooter.Controls.Add(BtnClose)
         pnlFooter.Dock = DockStyle.Fill
-        pnlFooter.Location = New Point(0, 408)
+        pnlFooter.Location = New Point(2, 406)
         pnlFooter.Margin = New Padding(0)
         pnlFooter.Name = "pnlFooter"
-        pnlFooter.Size = New Size(800, 42)
+        pnlFooter.Size = New Size(796, 42)
         pnlFooter.TabIndex = 7
         ' 
         ' BtnSave
@@ -308,8 +313,10 @@ Partial Class RTB
         BtnSave.ForeColor = Color.Black
         BtnSave.Image = My.Resources.Resources.floppy_disc
         BtnSave.ImageAlign = ContentAlignment.MiddleRight
-        BtnSave.Location = New Point(625, 0)
+        BtnSave.Location = New Point(621, 0)
+        BtnSave.Margin = New Padding(0)
         BtnSave.Name = "BtnSave"
+        BtnSave.Padding = New Padding(0, 0, 10, 0)
         BtnSave.Size = New Size(175, 42)
         BtnSave.TabIndex = 1
         BtnSave.Text = "SALVEAZĂ"
@@ -329,7 +336,9 @@ Partial Class RTB
         BtnClose.Image = My.Resources.Resources.logout
         BtnClose.ImageAlign = ContentAlignment.MiddleLeft
         BtnClose.Location = New Point(0, 0)
+        BtnClose.Margin = New Padding(0)
         BtnClose.Name = "BtnClose"
+        BtnClose.Padding = New Padding(10, 0, 0, 0)
         BtnClose.Size = New Size(175, 42)
         BtnClose.TabIndex = 0
         BtnClose.Text = "ÎNCHIDE"
